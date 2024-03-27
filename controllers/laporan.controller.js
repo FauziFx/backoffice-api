@@ -10,13 +10,14 @@ const getLaporanTransaksi = async (req, res, next) => {
     const jenis_transaksi = req.query.jenis_transaksi || "umum";
 
     const query = `SELECT DATE(tanggal) AS tanggal, SUM(total) AS total, 
-                  JSON_ARRAYAGG(JSON_OBJECT('waktu', SUBSTRING(cast(tanggal AS time), 1, 5), 
+                  JSON_ARRAYAGG(JSON_OBJECT('id', id, 'waktu', SUBSTRING(cast(tanggal AS time), 1, 5), 
                                             'no_nota', no_nota, 'metode_pembayaran', metode_pembayaran, 
                                             'status', status,'total', total)) AS transaksi
                   FROM tbl_transaksi 
                   WHERE DATE(tanggal) BETWEEN ? AND ?
                   AND jenis_transaksi = ?
-                  GROUP BY DATE(tanggal)`;
+                  GROUP BY DATE(tanggal)
+                  ORDER BY DATE(tanggal) DESC`;
 
     const [response] = await pool.query(query, [
       startDate,
@@ -60,18 +61,19 @@ const getTotalTransaksi = async (start_date, end_date, jenis_transaksi) => {
 const getLaporanTransaksiById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const query = `SELECT tbl_transaksi.no_nota, tbl_transaksi.tanggal, tbl_transaksi.total, tbl_transaksi.bayar, tbl_transaksi.kembalian, 
-                tbl_transaksi.jenis_transaksi, tbl_transaksi.metode_pembayaran, tbl_transaksi.id_pelanggan, tbl_transaksi.status,
-                JSON_ARRAYAGG(JSON_OBJECT(
-                    'id_varian', tbl_transaksi_detail.id_varian,
-                    'nama_produk', tbl_transaksi_detail.nama_produk,
-                    'nama_varian', tbl_transaksi_detail.nama_varian,
-                    'qty', tbl_transaksi_detail.qty,
-                    'subtotal', tbl_transaksi_detail.subtotal
-                )) AS transaksi_detail
-                FROM tbl_transaksi
-                JOIN tbl_transaksi_detail ON tbl_transaksi_detail.id_transaksi = tbl_transaksi.id
-                WHERE tbl_transaksi.id = ?`;
+    const query = `SELECT IFNULL(tbl_pelanggan.nama_pelanggan, "") AS nama_pelanggan, tbl_transaksi.no_nota, tbl_transaksi.tanggal, tbl_transaksi.total, tbl_transaksi.bayar, tbl_transaksi.kembalian, 
+                    tbl_transaksi.jenis_transaksi, tbl_transaksi.metode_pembayaran, tbl_transaksi.id_pelanggan, tbl_transaksi.status,
+                    JSON_ARRAYAGG(JSON_OBJECT(
+                        'id_varian', tbl_transaksi_detail.id_varian,
+                        'nama_produk', tbl_transaksi_detail.nama_produk,
+                        'nama_varian', tbl_transaksi_detail.nama_varian,
+                        'qty', tbl_transaksi_detail.qty,
+                        'subtotal', tbl_transaksi_detail.subtotal
+                    )) AS transaksi_detail
+                    FROM tbl_transaksi
+                    JOIN tbl_transaksi_detail ON tbl_transaksi_detail.id_transaksi = tbl_transaksi.id
+                    LEFT JOIN tbl_pelanggan ON tbl_pelanggan.id = tbl_transaksi.id_pelanggan
+                    WHERE tbl_transaksi.id = ?`;
     const [[response]] = await pool.query(query, [id]);
     res.status(200).json({
       success: true,
