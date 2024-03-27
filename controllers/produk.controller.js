@@ -86,7 +86,16 @@ const getProduk = async (req, res, next) => {
     const kategori = req.query.kategori || "";
     const search = req.query.search || "";
     const offset = limit * (page - 1);
+    const mobile = req.query.mobile || "n";
     let filterData = "";
+    let selectMobile = "";
+
+    // If get from mobile
+    if (mobile == "n") {
+      selectMobile = `SUM(tbl_varian.stok) AS stok, IFNULL(tbl_kategori.nama_kategori, "Uncategorized") AS nama_kategori `;
+    } else {
+      selectMobile = `COUNT(tbl_varian.id) AS item`;
+    }
 
     if (kategori != "") {
       if (kategori == 0) {
@@ -100,7 +109,7 @@ const getProduk = async (req, res, next) => {
       filterData = `WHERE tbl_produk.nama_produk LIKE '%${search}%'`;
     }
 
-    const query = `SELECT tbl_produk.id, tbl_produk.nama_produk, SUM(tbl_varian.stok) AS stok, IFNULL(tbl_kategori.nama_kategori, "Uncategorized") AS nama_kategori 
+    const query = `SELECT tbl_produk.id, tbl_produk.nama_produk, ${selectMobile}
     FROM tbl_varian
     RIGHT JOIN tbl_produk ON tbl_varian.id_produk = tbl_produk.id
     LEFT JOIN tbl_kategori ON tbl_produk.id_kategori = tbl_kategori.id
