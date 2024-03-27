@@ -48,7 +48,7 @@ const login = async (req, res, next) => {
             },
             process.env.SECRET_KEY,
             {
-              expiresIn: "7 days",
+              expiresIn: "31 days",
               // expiresIn: "2h",
             }
           );
