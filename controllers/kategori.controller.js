@@ -3,6 +3,7 @@ const pool = require("../db/connect.js");
 const getKategori = async (req, res, next) => {
   try {
     const search = req.query.search || "";
+    const order = req.query.order || "ASC";
     let filterSearch = "";
     if (search != "") {
       filterSearch = `WHERE nama_kategori LIKE '%${search}%'`;
@@ -13,7 +14,8 @@ const getKategori = async (req, res, next) => {
                     FROM tbl_kategori
                     LEFT JOIN tbl_produk ON tbl_produk.id_kategori = tbl_kategori.id
                     ${filterSearch}
-                    GROUP BY tbl_kategori.id, tbl_kategori.nama_kategori`;
+                    GROUP BY tbl_kategori.id, tbl_kategori.nama_kategori
+                    ORDER BY tbl_kategori.id ${order}`;
     const [response] = await pool.query(query);
     res.status(200).json({
       success: true,
