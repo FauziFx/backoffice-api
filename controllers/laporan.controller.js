@@ -8,14 +8,19 @@ const getLaporanTransaksi = async (req, res, next) => {
     const startDate = req.query.start_date || getCurrentDate();
     const endDate = req.query.end_date || getCurrentDate();
     const jenis_transaksi = req.query.jenis_transaksi || "umum";
+    const mobile = req.query.mobile || "n";
+
+    let isMobile = "";
+    if (mobile == "n") {
+      isMobile = `WHERE DATE(tanggal) BETWEEN ? AND ? AND jenis_transaksi = ?`;
+    }
 
     const query = `SELECT DATE(tanggal) AS tanggal, SUM(total) AS total, 
                   JSON_ARRAYAGG(JSON_OBJECT('id', id, 'waktu', SUBSTRING(cast(tanggal AS time), 1, 5), 
                                             'no_nota', no_nota, 'metode_pembayaran', metode_pembayaran, 
                                             'status', status,'total', total)) AS transaksi
                   FROM tbl_transaksi 
-                  WHERE DATE(tanggal) BETWEEN ? AND ?
-                  AND jenis_transaksi = ?
+                  ${isMobile}
                   GROUP BY DATE(tanggal)
                   ORDER BY DATE(tanggal) DESC`;
 
@@ -67,6 +72,7 @@ const getLaporanTransaksiById = async (req, res, next) => {
                         'id_varian', tbl_transaksi_detail.id_varian,
                         'nama_produk', tbl_transaksi_detail.nama_produk,
                         'nama_varian', tbl_transaksi_detail.nama_varian,
+                        'harga', tbl_transaksi_detail.harga,
                         'qty', tbl_transaksi_detail.qty,
                         'subtotal', tbl_transaksi_detail.subtotal
                     )) AS transaksi_detail
@@ -89,9 +95,9 @@ const getLaporanRingkasan = async (req, res, next) => {
     const startDate = req.query.start_date || getCurrentDate();
     const endDate = req.query.end_date || getCurrentDate();
 
-    const queryTotalPenjualan = `SELECT SUM(total) AS totalPenjualan FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ?`;
+    const queryTotalPenjualan = `SELECT SUM(total) AS totalPenjualan FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ? AND status = 'lunas'`;
     const queryTotalMaGrup = `SELECT SUM(total) AS totalMaGrup FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ? AND jenis_transaksi='magrup'`;
-    const queryTotalRefund = `SELECT IFNULL(SUM(total), 0) AS totalRefund FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ? AND status='refund'`;
+    const queryTotalRefund = `SELECT SUM(total) AS totalRefund FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ? AND status='refund'`;
 
     const [[{ totalPenjualan }]] = await pool.query(queryTotalPenjualan, [
       startDate,
@@ -105,13 +111,17 @@ const getLaporanRingkasan = async (req, res, next) => {
       startDate,
       endDate,
     ]);
-    const total =
-      parseInt(totalPenjualan) - parseInt(totalMaGrup) - parseInt(totalRefund);
+
+    let TotalPenjualan = parseInt(totalPenjualan) || 0;
+    let TotalMaGrup = parseInt(totalMaGrup) || 0;
+    let TotalRefund = parseInt(totalRefund) || 0;
+    let Total = TotalPenjualan - TotalMaGrup + TotalRefund;
+
     res.status(200).json({
-      totalPenjualan: totalPenjualan,
-      totalMaGrup: totalMaGrup,
-      totalRefund: totalRefund,
-      total: total,
+      totalPenjualan: TotalPenjualan,
+      totalMaGrup: TotalMaGrup,
+      totalRefund: TotalRefund,
+      total: Total,
     });
   } catch (error) {
     next(error);
@@ -123,12 +133,10 @@ const getLaporanMaGrup = async (req, res, next) => {
     const startDate = req.query.start_date || getCurrentDate();
     const endDate = req.query.end_date || getCurrentDate();
 
-    const query = `SELECT tbl_pelanggan.nama_pelanggan, SUM(tbl_transaksi_detail.qty) AS item_terjual, SUM(tbl_transaksi.total) AS total
-                FROM tbl_transaksi
-                JOIN tbl_transaksi_detail ON tbl_transaksi_detail.id_transaksi = tbl_transaksi.id
-                JOIN tbl_pelanggan ON tbl_transaksi.id_pelanggan = tbl_pelanggan.id
-                WHERE DATE(tbl_transaksi.tanggal) BETWEEN ? AND ? AND tbl_transaksi.jenis_transaksi = 'magrup'
-                GROUP BY tbl_pelanggan.nama_pelanggan`;
+    const query = `SELECT tbl_pelanggan.nama_pelanggan AS nama_pelanggan, SUM(tbl_transaksi_detail.qty) AS item_terjual, SUM(tbl_transaksi_detail.subtotal) AS total  FROM tbl_transaksi 
+    JOIN tbl_pelanggan ON tbl_pelanggan.id = tbl_transaksi.id_pelanggan
+    JOIN tbl_transaksi_detail ON tbl_transaksi_detail.id_transaksi = tbl_transaksi.id
+    WHERE DATE(tbl_transaksi.tanggal) BETWEEN ? AND ? AND tbl_transaksi.jenis_transaksi = "magrup"  GROUP BY tbl_transaksi.id_pelanggan`;
     const [response] = await pool.query(query, [startDate, endDate]);
 
     res.status(200).json({
