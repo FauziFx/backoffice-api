@@ -32,6 +32,7 @@ const {
   getLaporanTransaksiById,
   getLaporanRingkasan,
   getLaporanMaGrup,
+  getLaporanPos,
 } = require("../controllers/laporan.controller.js");
 
 const router = express.Router();
@@ -73,6 +74,7 @@ router.route("/laporan/transaksi").get(getLaporanTransaksi);
 router.route("/laporan/transaksi/:id").get(getLaporanTransaksiById);
 router.route("/laporan/ringkasan").get(getLaporanRingkasan);
 router.route("/laporan/magrup").get(getLaporanMaGrup);
+router.route("/laporan/pos").get(getLaporanPos);
 
 // Error
 const Error404 = (req, res) => {

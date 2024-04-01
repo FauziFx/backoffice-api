@@ -157,7 +157,45 @@ function getCurrentDate() {
   return tanggal;
 }
 
+const getLaporanPos = async (req, res, next) => {
+  try {
+    const tanggal = req.query.tanggal || getCurrentDate();
+    const query = `SELECT tbl_transaksi_detail.nama_produk, tbl_transaksi_detail.nama_varian, tbl_transaksi_detail.qty FROM tbl_transaksi_detail
+    JOIN tbl_transaksi ON tbl_transaksi_detail.id_transaksi = tbl_transaksi.id
+    WHERE DATE(tbl_transaksi.tanggal) = ?`;
+    const [response] = await pool.query(query, [tanggal]);
+    const total_item_terjual = response.reduce(
+      (accum, item) => accum + item.qty,
+      0
+    );
+    res.status(200).json({
+      success: true,
+      data: {
+        total_tunai: await getTotalPembayaran("tunai", tanggal),
+        total_transfer: await getTotalPembayaran("transfer", tanggal),
+        total_qris: await getTotalPembayaran("qris", tanggal),
+        total_edc: await getTotalPembayaran("edc", tanggal),
+        total_item_terjual: total_item_terjual,
+        item_terjual: response,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getTotalPembayaran = async (metode_pembayaran, tanggal) => {
+  try {
+    const query = `SELECT SUM(total) AS total FROM tbl_transaksi WHERE metode_pembayaran = ? AND DATE(tanggal) = ?;`;
+    const [[response]] = await pool.query(query, [metode_pembayaran, tanggal]);
+    return response.total;
+  } catch (error) {
+    return error;
+  }
+};
+
 exports.getLaporanTransaksi = getLaporanTransaksi;
 exports.getLaporanTransaksiById = getLaporanTransaksiById;
 exports.getLaporanRingkasan = getLaporanRingkasan;
 exports.getLaporanMaGrup = getLaporanMaGrup;
+exports.getLaporanPos = getLaporanPos;
