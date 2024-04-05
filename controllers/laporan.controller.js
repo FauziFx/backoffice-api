@@ -162,20 +162,25 @@ const getLaporanPos = async (req, res, next) => {
     const tanggal = req.query.tanggal || getCurrentDate();
     const query = `SELECT tbl_transaksi_detail.nama_produk, tbl_transaksi_detail.nama_varian, tbl_transaksi_detail.qty FROM tbl_transaksi_detail
     JOIN tbl_transaksi ON tbl_transaksi_detail.id_transaksi = tbl_transaksi.id
-    WHERE DATE(tbl_transaksi.tanggal) = ?`;
+    WHERE DATE(tbl_transaksi.tanggal) = ? AND tbl_transaksi.jenis_transaksi = "umum"`;
     const [response] = await pool.query(query, [tanggal]);
     const total_item_terjual = response.reduce(
       (accum, item) => accum + item.qty,
       0
     );
+
+    const queryTotalMaGrup = `SELECT IFNULL(SUM(total), 0) AS totalMaGrup FROM tbl_transaksi WHERE DATE(tanggal)  = ? AND jenis_transaksi='magrup'`;
+    const [[{ totalMaGrup }]] = await pool.query(queryTotalMaGrup, [tanggal]);
+
     res.status(200).json({
       success: true,
       data: {
-        total_tunai: await getTotalPembayaran("tunai", tanggal),
-        total_transfer: await getTotalPembayaran("transfer", tanggal),
-        total_qris: await getTotalPembayaran("qris", tanggal),
-        total_edc: await getTotalPembayaran("edc", tanggal),
+        total_tunai: await getTotalPembayaran("tunai", tanggal, "umum"),
+        total_transfer: await getTotalPembayaran("transfer", tanggal, "umum"),
+        total_qris: await getTotalPembayaran("qris", tanggal, "umum"),
+        total_edc: await getTotalPembayaran("edc", tanggal, "umum"),
         total_item_terjual: total_item_terjual,
+        total_magrup: totalMaGrup,
         item_terjual: response,
       },
     });
@@ -184,10 +189,18 @@ const getLaporanPos = async (req, res, next) => {
   }
 };
 
-const getTotalPembayaran = async (metode_pembayaran, tanggal) => {
+const getTotalPembayaran = async (
+  metode_pembayaran,
+  tanggal,
+  jenis_transaksi
+) => {
   try {
-    const query = `SELECT SUM(total) AS total FROM tbl_transaksi WHERE metode_pembayaran = ? AND DATE(tanggal) = ?;`;
-    const [[response]] = await pool.query(query, [metode_pembayaran, tanggal]);
+    const query = `SELECT IFNULL(SUM(total), 0) AS total FROM tbl_transaksi WHERE metode_pembayaran = ? AND DATE(tanggal) = ? AND jenis_transaksi = ?`;
+    const [[response]] = await pool.query(query, [
+      metode_pembayaran,
+      tanggal,
+      jenis_transaksi,
+    ]);
     return response.total;
   } catch (error) {
     return error;
