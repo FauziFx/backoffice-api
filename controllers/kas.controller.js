@@ -2,11 +2,10 @@ const pool = require("../db/connect.js");
 
 const getKas = async (req, res, next) => {
   try {
-    const jenis = req.query.jenis;
     const tanggal = req.query.tanggal;
-    const query = `SELECT tanggal, total, keterangan FROM tbl_kas WHERE jenis = ? AND DATE(tanggal) = ?`;
+    const query = `SELECT tanggal, total, jenis, keterangan FROM tbl_kas WHERE DATE(tanggal) = ?`;
 
-    const [response] = await pool.query(query, [jenis, tanggal]);
+    const [response] = await pool.query(query, [tanggal]);
 
     res.status(200).json({
       success: true,
