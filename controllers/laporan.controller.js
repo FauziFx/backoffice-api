@@ -98,6 +98,7 @@ const getLaporanRingkasan = async (req, res, next) => {
     const queryTotalPenjualan = `SELECT SUM(total) AS totalPenjualan FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ? AND status = 'lunas'`;
     const queryTotalMaGrup = `SELECT SUM(total) AS totalMaGrup FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ? AND jenis_transaksi='magrup'`;
     const queryTotalRefund = `SELECT SUM(total) AS totalRefund FROM tbl_transaksi WHERE DATE(tanggal) BETWEEN ? AND ? AND status='refund'`;
+    const queryMetodePembayaran = `SELECT metode_pembayaran, SUM(total) AS total from tbl_transaksi where jenis_transaksi = 'umum' AND DATE(tanggal) BETWEEN ? AND ? GROUP by metode_pembayaran`;
 
     const [[{ totalPenjualan }]] = await pool.query(queryTotalPenjualan, [
       startDate,
@@ -111,6 +112,16 @@ const getLaporanRingkasan = async (req, res, next) => {
       startDate,
       endDate,
     ]);
+    const [resultMetodePembayaran] = await pool.query(queryMetodePembayaran, [
+      startDate,
+      endDate,
+    ]);
+
+    var mapped = resultMetodePembayaran.map((item) => ({
+      [item.metode_pembayaran]: item.total,
+    }));
+    let listMetode = { tunai: 0, transfer: 0, qris: 0, edc: 0 };
+    var newObj = Object.assign(listMetode, ...mapped);
 
     let TotalPenjualan = parseInt(totalPenjualan) || 0;
     let TotalMaGrup = parseInt(totalMaGrup) || 0;
@@ -122,6 +133,10 @@ const getLaporanRingkasan = async (req, res, next) => {
       totalMaGrup: TotalMaGrup,
       totalRefund: TotalRefund,
       total: Total,
+      tunai: newObj.tunai,
+      transfer: newObj.transfer,
+      qris: newObj.qris,
+      edc: newObj.edc,
     });
   } catch (error) {
     next(error);
