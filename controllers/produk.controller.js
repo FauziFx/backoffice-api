@@ -43,15 +43,16 @@ const createVarian = async (id_produk, varian) => {
       varian.map((item) => {
         const arr = [];
         arr[0] = produkid + sprintf("%04s", i++);
-        arr[1] = item.nama_varian;
-        arr[2] = item.stok || 0;
-        arr[3] = item.stok_minimum || 0;
-        arr[4] = item.harga;
-        arr[5] = item.track_stok;
-        arr[6] = id_produk;
+        arr[1] = item.nama;
+        arr[2] = item.nama_varian;
+        arr[3] = item.stok || 0;
+        arr[4] = item.stok_minimum || 0;
+        arr[5] = item.harga;
+        arr[6] = item.track_stok;
+        arr[7] = id_produk;
         varianArray.push(arr);
       });
-      const queryCreateVarian = `INSERT INTO tbl_varian (kode_varian, nama_varian, stok, stok_minimum, harga, track_stok, id_produk) VALUES ?`;
+      const queryCreateVarian = `INSERT INTO tbl_varian (kode_varian, nama, nama_varian, stok, stok_minimum, harga, track_stok, id_produk) VALUES ?`;
       await pool.query(queryCreateVarian, [varianArray]);
     } else {
       // Insert varian if product exist
@@ -63,15 +64,16 @@ const createVarian = async (id_produk, varian) => {
       varian.map((item) => {
         const arr = [];
         arr[0] = produkid + sprintf("%04s", i++);
-        arr[1] = item.nama_varian;
-        arr[2] = item.stok || 0;
-        arr[3] = item.stok_minimum || 0;
-        arr[4] = item.harga;
-        arr[5] = item.track_stok;
-        arr[6] = id_produk;
+        arr[1] = item.nama;
+        arr[2] = item.nama_varian;
+        arr[3] = item.stok || 0;
+        arr[4] = item.stok_minimum || 0;
+        arr[5] = item.harga;
+        arr[6] = item.track_stok;
+        arr[7] = id_produk;
         varianArray2.push(arr);
       });
-      const queryCreateVarian2 = `INSERT INTO tbl_varian (kode_varian, nama_varian, stok, stok_minimum, harga, track_stok, id_produk) VALUES ?`;
+      const queryCreateVarian2 = `INSERT INTO tbl_varian (kode_varian, nama, nama_varian, stok, stok_minimum, harga, track_stok, id_produk) VALUES ?`;
       await pool.query(queryCreateVarian2, [varianArray2]);
     }
   } catch (error) {
@@ -82,7 +84,7 @@ const createVarian = async (id_produk, varian) => {
 const getProduk = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 30;
+    const limit = parseInt(req.query.limit) || 1000;
     const kategori = req.query.kategori || "";
     const search = req.query.search || "";
     const offset = limit * (page - 1);
