@@ -1,4 +1,5 @@
 const express = require("express");
+const expressListRoutes = require("express-list-routes");
 const { login, authToken } = require("../controllers/auth.controller.js");
 const {
   getKategori,
@@ -88,5 +89,8 @@ const Error404 = (req, res) => {
   });
 };
 router.route("*").get(Error404).post(Error404);
+if (process.env.NODE_ENV === "DEVELOPMENT") {
+  expressListRoutes(router);
+}
 
 module.exports = router;
