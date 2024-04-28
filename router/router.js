@@ -36,6 +36,10 @@ const {
   getLaporanPos,
 } = require("../controllers/laporan.controller.js");
 const { getKas, createKas } = require("../controllers/kas.controller.js");
+const {
+  getStok,
+  getStokByPower,
+} = require("../controllers/stok.controller.js");
 
 const router = express.Router();
 
@@ -80,6 +84,9 @@ router.route("/laporan/pos").get(getLaporanPos);
 
 // Get Kas masuk & keluar
 router.route("/kas").get(getKas).post(createKas);
+
+// Stok Lensa
+router.route("/stok").post(getStok);
 
 // Error
 const Error404 = (req, res) => {
