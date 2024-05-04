@@ -40,6 +40,12 @@ const {
   getStok,
   getStokByPower,
 } = require("../controllers/stok.controller.js");
+const {
+  getUser,
+  createUser,
+  deleteUser,
+  updateUser,
+} = require("../controllers/user.controller.js");
 
 const router = express.Router();
 
@@ -87,6 +93,10 @@ router.route("/kas").get(getKas).post(createKas);
 
 // Stok Lensa
 router.route("/stok").post(getStok);
+
+// Users
+router.route("/user").get(getUser).post(createUser);
+router.route("/user/:id").delete(deleteUser).put(updateUser);
 
 // Error
 const Error404 = (req, res) => {
