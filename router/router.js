@@ -45,6 +45,7 @@ const {
   createUser,
   deleteUser,
   updateUser,
+  changePassword,
 } = require("../controllers/user.controller.js");
 
 const router = express.Router();
@@ -97,6 +98,7 @@ router.route("/stok").post(getStok);
 // Users
 router.route("/user").get(getUser).post(createUser);
 router.route("/user/:id").delete(deleteUser).put(updateUser);
+router.route("/change_password/:id").put(changePassword);
 
 // Error
 const Error404 = (req, res) => {

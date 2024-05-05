@@ -75,7 +75,29 @@ const updateUser = async (req, res, next) => {
   }
 };
 
+const changePassword = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { nama, username, password_lama, password_baru } = req.body;
+    const query = `SELECT password FROM tbl_user WHERE id = ?`;
+    const [[{ password }]] = await pool.query(query, [id]);
+    const match = await bcrypt.compare(password_lama, password);
+    if (match) {
+      const passwordHash = bcrypt.hashSync(password_baru, 10);
+      const query = `UPDATE tbl_user SET nama = ?, username = ?, password = ? WHERE id = ?`;
+      await pool.query(query, [nama, username, passwordHash, id]);
+    }
+    res.status(201).json({
+      success: true,
+      match: match,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getUser = getUser;
 exports.createUser = createUser;
 exports.deleteUser = deleteUser;
 exports.updateUser = updateUser;
+exports.changePassword = changePassword;
