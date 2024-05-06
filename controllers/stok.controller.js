@@ -1,6 +1,6 @@
 const pool = require("../db/connect.js");
 
-const getStok = async (req, res, next) => {
+const getStokByPower = async (req, res, next) => {
   try {
     const { power } = req.body;
     const query = `SELECT tbl_varian.nama, tbl_varian.nama_varian, tbl_varian.stok FROM tbl_varian
@@ -16,4 +16,33 @@ const getStok = async (req, res, next) => {
   }
 };
 
-exports.getStok = getStok;
+const getLensa = async (req, res, next) => {
+  try {
+    const query = `SELECT nama FROM tbl_varian GROUP BY nama`;
+    const [response] = await pool.query(query);
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getStokByLensa = async (req, res, next) => {
+  try {
+    const { nama_lensa } = req.query;
+    const query = `SELECT nama_varian, stok FROM tbl_varian WHERE nama = ?`;
+    const [response] = await pool.query(query, [nama_lensa]);
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getStokByPower = getStokByPower;
+exports.getLensa = getLensa;
+exports.getStokByLensa = getStokByLensa;

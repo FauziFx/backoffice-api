@@ -39,6 +39,8 @@ const { getKas, createKas } = require("../controllers/kas.controller.js");
 const {
   getStok,
   getStokByPower,
+  getLensa,
+  getStokByLensa,
 } = require("../controllers/stok.controller.js");
 const {
   getUser,
@@ -93,7 +95,8 @@ router.route("/laporan/pos").get(getLaporanPos);
 router.route("/kas").get(getKas).post(createKas);
 
 // Stok Lensa
-router.route("/stok").post(getStok);
+router.route("/stok").post(getStokByPower).get(getStokByLensa);
+router.route("/lensa").get(getLensa);
 
 // Users
 router.route("/user").get(getUser).post(createUser);
