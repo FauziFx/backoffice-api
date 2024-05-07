@@ -49,12 +49,44 @@ const {
   updateUser,
   changePassword,
 } = require("../controllers/user.controller.js");
+const {
+  getGaransiPagination,
+  getGaransiAll,
+  getGaransiById,
+  createDataGaransi,
+  updateDataGaransi,
+  deleteDataGaransi,
+} = require("../controllers/garansi.controller");
+const {
+  getKlaimALl,
+  getKlaimByGaransiId,
+  createDataKlaim,
+  deleteDataKlaim,
+  getKlaimPagination,
+} = require("../controllers/klaim.controller.js");
 
 const router = express.Router();
+
+// Router Garansi
+router.route("/garansipage").get(getGaransiPagination);
+router.route("/garansi").get(getGaransiAll).post(createDataGaransi);
+router
+  .route("/garansi/:id")
+  .get(getGaransiById)
+  .put(updateDataGaransi)
+  .delete(deleteDataGaransi);
 
 // Auth
 router.route("/login").post(login);
 router.use(authToken);
+
+// Router Klaim Garansi
+router.route("/garansi_klaim_page").get(getKlaimPagination);
+router.route("/garansi_klaim").get(getKlaimALl).post(createDataKlaim);
+router
+  .route("/garansi_klaim/:id")
+  .get(getKlaimByGaransiId)
+  .delete(deleteDataKlaim);
 
 // Kategori Router
 router.route("/kategori").get(getKategori).post(createKategori);
