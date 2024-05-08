@@ -64,6 +64,24 @@ const {
   deleteDataKlaim,
   getKlaimPagination,
 } = require("../controllers/klaim.controller.js");
+const {
+  getPasienAll,
+  createDataPasien,
+  updateDataPasien,
+  deleteDataPasien,
+} = require("../controllers/pasien.controller.js");
+const {
+  getRekamAll,
+  createDataRekam,
+  deleteDataRekam,
+  getRekamByPasienId,
+} = require("../controllers/rekam.controller.js");
+const {
+  getOptikAll,
+  createDataOptik,
+  deleteDataOptik,
+  updateDataOptik,
+} = require("../controllers/optik.controller.js");
 
 const router = express.Router();
 
@@ -76,6 +94,9 @@ router
   .put(updateDataGaransi)
   .delete(deleteDataGaransi);
 
+// Router Optik
+router.route("/optik").get(getOptikAll).post(createDataOptik);
+
 // Auth
 router.route("/login").post(login);
 router.use(authToken);
@@ -87,6 +108,14 @@ router
   .route("/garansi_klaim/:id")
   .get(getKlaimByGaransiId)
   .delete(deleteDataKlaim);
+
+// Router Pasien
+router.route("/pasien").get(getPasienAll).post(createDataPasien);
+router.route("/pasien/:id").put(updateDataPasien).delete(deleteDataPasien);
+
+// Router Rekam Medis
+router.route("/rekam").get(getRekamAll).post(createDataRekam);
+router.route("/rekam/:id").delete(deleteDataRekam).get(getRekamByPasienId);
 
 // Kategori Router
 router.route("/kategori").get(getKategori).post(createKategori);
