@@ -8,10 +8,10 @@ const getLaporanTransaksi = async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = limit * (page - 1);
-    const totalRows = await pool.query(
-      `SELECT COUNT(id) as totalRow FROM tbl_transaksi`
-    );
-    const totalPage = Math.ceil(totalRows[0][0].totalRow / limit);
+    // const totalRows = await pool.query(
+    //   `SELECT COUNT(id) as totalRow FROM tbl_transaksi`
+    // );
+    // const totalPage = Math.ceil(totalRows[0][0].totalRow / limit);
 
     const startDate = req.query.start_date || getCurrentDate();
     const endDate = req.query.end_date || getCurrentDate();
