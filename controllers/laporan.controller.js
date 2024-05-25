@@ -5,14 +5,25 @@ moment.locale("id");
 
 const getLaporanTransaksi = async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = limit * (page - 1);
+    const totalRows = await pool.query(
+      `SELECT COUNT(id) as totalRow FROM tbl_transaksi`
+    );
+    const totalPage = Math.ceil(totalRows[0][0].totalRow / limit);
+
     const startDate = req.query.start_date || getCurrentDate();
     const endDate = req.query.end_date || getCurrentDate();
     const jenis_transaksi = req.query.jenis_transaksi || "umum";
     const mobile = req.query.mobile || "n";
 
-    let isMobile = "";
+    let filterTgl = "";
+    let filterPagination = "";
     if (mobile == "n") {
-      isMobile = `WHERE DATE(tanggal) BETWEEN ? AND ? AND jenis_transaksi = ?`;
+      filterTgl = `WHERE DATE(tanggal) BETWEEN ? AND ? AND jenis_transaksi = ?`;
+    }else{
+      filterPagination = `LIMIT ${limit} OFFSET ${offset}`;
     }
 
     const query = `SELECT DATE(tanggal) AS tanggal, SUM(total) AS total, 
@@ -20,9 +31,10 @@ const getLaporanTransaksi = async (req, res, next) => {
                                             'no_nota', no_nota, 'metode_pembayaran', metode_pembayaran, 
                                             'status', status,'total', total)) AS transaksi
                   FROM tbl_transaksi 
-                  ${isMobile}
+                  ${filterTgl}
                   GROUP BY DATE(tanggal)
-                  ORDER BY DATE(tanggal) DESC`;
+                  ORDER BY DATE(tanggal) DESC
+                  ${filterPagination}`;
 
     const [response] = await pool.query(query, [
       startDate,
@@ -37,6 +49,8 @@ const getLaporanTransaksi = async (req, res, next) => {
     res.status(200).json({
       success: true,
       data_total: total_transaksi,
+      page: page,
+      limit: limit,
       data: response,
     });
     // tanggal_yg_bener: moment(response.tanggal)
