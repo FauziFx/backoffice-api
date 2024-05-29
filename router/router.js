@@ -85,6 +85,21 @@ const {
 
 const router = express.Router();
 
+const fs = require("fs");
+const path = require("path");
+const multer = require("multer");
+const upload = multer({
+  dest: "images/",
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if (ext !== ".png" && ext !== ".jpg" && ext !== ".jpeg") {
+      return callback(new Error("Only images are allowed"));
+    }
+    callback(null, true);
+  },
+  limits: { fileSize: 2097152 /* bytes */ },
+});
+
 // Router Garansi
 router.route("/garansipage").get(getGaransiPagination);
 router.route("/garansi").get(getGaransiAll).post(createDataGaransi);
@@ -101,6 +116,13 @@ router.route("/optik").get(getOptikAll).post(createDataOptik);
 router.route("/login").post(login);
 router.use(authToken);
 
+// Get image rekam medis
+router.route("/images/:imageName").get((req, res) => {
+  const imageName = req.params.imageName;
+  const readStream = fs.createReadStream(`images/${imageName}`);
+  readStream.pipe(res);
+});
+
 // Router Klaim Garansi
 router.route("/garansi_klaim_page").get(getKlaimPagination);
 router.route("/garansi_klaim").get(getKlaimALl).post(createDataKlaim);
@@ -114,7 +136,10 @@ router.route("/pasien").get(getPasienAll).post(createDataPasien);
 router.route("/pasien/:id").put(updateDataPasien).delete(deleteDataPasien);
 
 // Router Rekam Medis
-router.route("/rekam").get(getRekamAll).post(createDataRekam);
+router
+  .route("/rekam")
+  .get(getRekamAll)
+  .post(upload.single("image"), createDataRekam);
 router.route("/rekam/:id").delete(deleteDataRekam).get(getRekamByPasienId);
 
 // Kategori Router

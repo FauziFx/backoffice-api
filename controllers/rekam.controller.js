@@ -20,6 +20,8 @@ const getRekamAll = async (req, res, next) => {
 
 const createDataRekam = async (req, res, next) => {
   try {
+    const imageName = req.file.filename;
+    const url = `${req.protocol}://${req.get("host")}/api/images/${imageName}`;
     const {
       od,
       os,
@@ -34,9 +36,9 @@ const createDataRekam = async (req, res, next) => {
     } = req.body;
 
     await pool.query(
-      `INSERT INTO tbl_rekam 
-      (od,os,pd_jauh,pd_dekat,tanggal_periksa,pemeriksa,keterangan,ukuran_lama,pasien_id,optik_id)
-      VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      `INSERT INTO tbl_rekam
+      (od,os,pd_jauh,pd_dekat,tanggal_periksa,pemeriksa,keterangan,ukuran_lama,image,url,pasien_id,optik_id)
+      VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
       [
         od,
         os,
@@ -46,6 +48,8 @@ const createDataRekam = async (req, res, next) => {
         pemeriksa,
         keterangan,
         ukuran_lama,
+        imageName,
+        url,
         pasien_id,
         optik_id,
       ]
