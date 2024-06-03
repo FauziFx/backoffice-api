@@ -1,4 +1,5 @@
 const pool = require("../db/connect.js");
+const fs = require("fs");
 
 const getRekamAll = async (req, res, next) => {
   try {
@@ -33,7 +34,7 @@ const createDataRekam = async (req, res, next) => {
       ukuran_lama,
       pasien_id,
       optik_id,
-    } = req.body;
+    } = JSON.parse(req.body.data);
 
     await pool.query(
       `INSERT INTO tbl_rekam
@@ -64,11 +65,15 @@ const createDataRekam = async (req, res, next) => {
 };
 
 const deleteDataRekam = async (req, res, next) => {
-  const { id } = req.params;
+  const { id, image } = req.params;
   try {
     const response = await pool.query("DELETE FROM tbl_rekam WHERE id = ?", [
       id,
     ]);
+
+    if (image != "image") {
+      fs.unlinkSync("./images/" + image);
+    }
 
     res.status(200).json({
       success: true,

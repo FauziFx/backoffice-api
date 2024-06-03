@@ -112,16 +112,16 @@ router
 // Router Optik
 router.route("/optik").get(getOptikAll).post(createDataOptik);
 
-// Auth
-router.route("/login").post(login);
-router.use(authToken);
-
 // Get image rekam medis
 router.route("/images/:imageName").get((req, res) => {
   const imageName = req.params.imageName;
   const readStream = fs.createReadStream(`images/${imageName}`);
   readStream.pipe(res);
 });
+
+// Auth
+router.route("/login").post(login);
+router.use(authToken);
 
 // Router Klaim Garansi
 router.route("/garansi_klaim_page").get(getKlaimPagination);
@@ -140,7 +140,8 @@ router
   .route("/rekam")
   .get(getRekamAll)
   .post(upload.single("image"), createDataRekam);
-router.route("/rekam/:id").delete(deleteDataRekam).get(getRekamByPasienId);
+router.route("/rekam/:id").get(getRekamByPasienId);
+router.route("/rekam/:id/:image").delete(deleteDataRekam);
 
 // Kategori Router
 router.route("/kategori").get(getKategori).post(createKategori);
