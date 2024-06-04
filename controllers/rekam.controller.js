@@ -64,6 +64,47 @@ const createDataRekam = async (req, res, next) => {
   }
 };
 
+const createDataRekamLama = async (req, res, next) => {
+  try {
+    const {
+      od,
+      os,
+      pd_jauh,
+      pd_dekat,
+      tanggal_periksa,
+      pemeriksa,
+      keterangan,
+      ukuran_lama,
+      pasien_id,
+      optik_id,
+    } = req.body;
+
+    await pool.query(
+      `INSERT INTO tbl_rekam
+      (od,os,pd_jauh,pd_dekat,tanggal_periksa,pemeriksa,keterangan,ukuran_lama,pasien_id,optik_id)
+      VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      [
+        od,
+        os,
+        pd_jauh,
+        pd_dekat,
+        tanggal_periksa,
+        pemeriksa,
+        keterangan,
+        ukuran_lama,
+        pasien_id,
+        optik_id,
+      ]
+    );
+    res.status(201).json({
+      success: true,
+      message: "Data Berhasil Disimpan!",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const deleteDataRekam = async (req, res, next) => {
   const { id, image } = req.params;
   try {
@@ -104,5 +145,6 @@ const getRekamByPasienId = async (req, res, next) => {
 
 exports.getRekamAll = getRekamAll;
 exports.createDataRekam = createDataRekam;
+exports.createDataRekamLama = createDataRekamLama;
 exports.deleteDataRekam = deleteDataRekam;
 exports.getRekamByPasienId = getRekamByPasienId;

@@ -75,6 +75,7 @@ const {
   createDataRekam,
   deleteDataRekam,
   getRekamByPasienId,
+  createDataRekamLama,
 } = require("../controllers/rekam.controller.js");
 const {
   getOptikAll,
@@ -140,6 +141,7 @@ router
   .route("/rekam")
   .get(getRekamAll)
   .post(upload.single("image"), createDataRekam);
+router.route("/rekam_lama").post(createDataRekamLama);
 router.route("/rekam/:id").get(getRekamByPasienId);
 router.route("/rekam/:id/:image").delete(deleteDataRekam);
 
