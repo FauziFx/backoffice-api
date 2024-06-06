@@ -3,8 +3,35 @@ const pool = require("../db/connect.js");
 const getPasienAll = async (req, res, next) => {
   try {
     const [response] = await pool.query(
-      "SELECT * FROM tbl_pasien ORDER BY id DESC"
+      `SELECT 
+      tbl_pasien.id,
+      tbl_pasien.nama,
+      tbl_pasien.alamat,
+      tbl_pasien.ttl,
+      tbl_pasien.jenis_kelamin,
+      tbl_pasien.pekerjaan,
+      tbl_pasien.nohp,
+      tbl_pasien.riwayat,
+      tbl_pasien.tanggal,
+      tbl_pasien.update_at,
+      MAX(tbl_rekam.tanggal_periksa) AS terakhir_periksa
+      FROM tbl_pasien 
+      LEFT JOIN tbl_rekam 
+      ON tbl_rekam.pasien_id = tbl_pasien.id
+      GROUP BY 
+      tbl_pasien.id,
+      tbl_pasien.nama,
+      tbl_pasien.alamat,
+      tbl_pasien.ttl,
+      tbl_pasien.jenis_kelamin,
+      tbl_pasien.pekerjaan,
+      tbl_pasien.nohp,
+      tbl_pasien.riwayat,
+      tbl_pasien.tanggal,
+      tbl_pasien.update_at
+      ORDER BY tbl_pasien.id DESC`
     );
+
     res.status(200).json({
       success: true,
       data: response,
