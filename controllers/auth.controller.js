@@ -44,6 +44,7 @@ const login = async (req, res, next) => {
                 nama: user[0].nama,
                 username: user[0].username,
                 role: user[0].role,
+                id_optik: user[0].id_optik,
               },
             },
             process.env.SECRET_KEY,
