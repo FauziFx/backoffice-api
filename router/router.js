@@ -98,7 +98,7 @@ const upload = multer({
     }
     callback(null, true);
   },
-  limits: { fileSize: 2097152 /* bytes */ },
+  limits: { fileSize: 3145728 /* bytes/ 3MB */ },
 });
 
 // Router Garansi
