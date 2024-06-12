@@ -8,7 +8,10 @@ const getUser = async (req, res, next) => {
     if (search != "") {
       filterSearch = `WHERE nama LIKE '%${search}%'`;
     }
-    const query = `SELECT id, nama, username, role FROM tbl_user ${filterSearch}`;
+    const query = `SELECT tbl_user.id, tbl_user.nama, tbl_user.username, tbl_user.role, tbl_user.id_optik, tbl_optik.nama_optik
+                   FROM tbl_user
+                   LEFT JOIN tbl_optik ON tbl_optik.id = tbl_user.id_optik 
+                   ${filterSearch}`;
     const [response] = await pool.query(query);
     res.status(200).json({
       success: true,
@@ -21,15 +24,16 @@ const getUser = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   try {
-    const { nama, username, password, role } = req.body;
+    const { nama, username, password, role, id_optik } = req.body;
     const passwordHash = bcrypt.hashSync(password, 10);
     const query =
-      "INSERT INTO tbl_user (nama, username, password, role) VALUES (?,?,?,?)";
+      "INSERT INTO tbl_user (nama, username, password, role, id_optik) VALUES (?,?,?,?,?)";
     await pool.query(query, [
       nama,
       username.toString().replace(/\s+/g, ""),
       passwordHash,
       role,
+      id_optik,
     ]);
     res.status(201).json({
       success: true,
@@ -57,14 +61,21 @@ const deleteUser = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { nama, username, password, role } = req.body;
+    const { nama, username, password, role, id_optik } = req.body;
     if (password != "") {
       const passwordHash = bcrypt.hashSync(password, 10);
-      const query = `UPDATE tbl_user SET nama = ?, username = ?, password = ?, role = ? WHERE id = ?`;
-      await pool.query(query, [nama, username, passwordHash, role, id]);
+      const query = `UPDATE tbl_user SET nama = ?, username = ?, password = ?, role = ?, id_optik = ? WHERE id = ?`;
+      await pool.query(query, [
+        nama,
+        username,
+        passwordHash,
+        role,
+        id_optik,
+        id,
+      ]);
     } else {
-      const query = `UPDATE tbl_user SET nama = ?, username = ?, role = ? WHERE id = ?`;
-      await pool.query(query, [nama, username, role, id]);
+      const query = `UPDATE tbl_user SET nama = ?, username = ?, role = ?, id_optik = ? WHERE id = ?`;
+      await pool.query(query, [nama, username, role, id_optik, id]);
     }
     res.status(201).json({
       success: true,
