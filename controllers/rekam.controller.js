@@ -72,28 +72,24 @@ const createDataRekamLama = async (req, res, next) => {
       pd_jauh,
       pd_dekat,
       tanggal_periksa,
-      pemeriksa,
       keterangan,
       ukuran_lama,
       pasien_id,
-      optik_id,
     } = req.body;
 
     await pool.query(
       `INSERT INTO tbl_rekam
-      (od,os,pd_jauh,pd_dekat,tanggal_periksa,pemeriksa,keterangan,ukuran_lama,pasien_id,optik_id)
-      VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      (od,os,pd_jauh,pd_dekat,tanggal_periksa,keterangan,ukuran_lama,pasien_id)
+      VALUES (?,?,?,?,?,?,?,?)`,
       [
         od,
         os,
         pd_jauh,
         pd_dekat,
         tanggal_periksa,
-        pemeriksa,
         keterangan,
         ukuran_lama,
         pasien_id,
-        optik_id,
       ]
     );
     res.status(201).json({
