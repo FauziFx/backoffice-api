@@ -1,4 +1,5 @@
 const pool = require("../db/connect.js");
+const fs = require("fs");
 
 const getPasienAll = async (req, res, next) => {
   try {
@@ -14,10 +15,13 @@ const getPasienAll = async (req, res, next) => {
       tbl_pasien.riwayat,
       tbl_pasien.tanggal,
       tbl_pasien.update_at,
+      tbl_pasien.id_optik,
+      tbl_optik.nama_optik,
       MAX(tbl_rekam.tanggal_periksa) AS terakhir_periksa
       FROM tbl_pasien 
       LEFT JOIN tbl_rekam 
       ON tbl_rekam.pasien_id = tbl_pasien.id
+      LEFT JOIN tbl_optik ON tbl_optik.id = tbl_pasien.id_optik
       GROUP BY 
       tbl_pasien.id,
       tbl_pasien.nama,
@@ -42,14 +46,22 @@ const getPasienAll = async (req, res, next) => {
 };
 
 const createDataPasien = async (req, res, next) => {
-  const { nama, alamat, ttl, jenis_kelamin, pekerjaan, nohp, riwayat } =
-    req.body;
+  const {
+    nama,
+    alamat,
+    ttl,
+    jenis_kelamin,
+    pekerjaan,
+    nohp,
+    riwayat,
+    id_optik,
+  } = req.body;
 
   try {
     const response = await pool.query(
-      `INSERT INTO tbl_pasien (nama,alamat,ttl,jenis_kelamin,pekerjaan,nohp,riwayat)
-        VALUES (?,?,?,?,?,?,?)`,
-      [nama, alamat, ttl, jenis_kelamin, pekerjaan, nohp, riwayat]
+      `INSERT INTO tbl_pasien (nama,alamat,ttl,jenis_kelamin,pekerjaan,nohp,riwayat, id_optik)
+        VALUES (?,?,?,?,?,?,?,?)`,
+      [nama, alamat, ttl, jenis_kelamin, pekerjaan, nohp, riwayat, id_optik]
     );
     res.status(201).json({
       success: true,
@@ -94,9 +106,18 @@ const updateDataPasien = async (req, res, next) => {
 const deleteDataPasien = async (req, res, next) => {
   const { id } = req.params;
   try {
+    const [data] = await pool.query(
+      "SELECT image FROM tbl_rekam WHERE pasien_id = ? AND image IS NOT NULL",
+      [id]
+    );
+
+    data.map((item) => {
+      fs.unlinkSync("./images/" + item.image);
+    });
+
     await pool.query("DELETE FROM tbl_pasien WHERE id = ?", [id]);
 
-    res.json({ success: true, message: "Data berhasil dihapus!" });
+    res.json({ success: true, message: "Data berhasil dihapus!", data: data });
   } catch (error) {
     next(error);
   }
