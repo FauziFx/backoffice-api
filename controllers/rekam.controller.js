@@ -127,7 +127,8 @@ const getRekamByPasienId = async (req, res, next) => {
   try {
     const [response] = await pool.query(
       `SELECT tbl_rekam.*, tbl_optik.nama_optik FROM tbl_rekam 
-      LEFT JOIN tbl_optik ON tbl_rekam.optik_id = tbl_optik.id WHERE tbl_rekam.pasien_id = ?`,
+      LEFT JOIN tbl_optik ON tbl_rekam.optik_id = tbl_optik.id WHERE tbl_rekam.pasien_id = ?
+      ORDER BY tbl_rekam.id DESC`,
       [id]
     );
     res.status(200).json({
