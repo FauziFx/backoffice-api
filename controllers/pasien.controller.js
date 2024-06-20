@@ -75,12 +75,20 @@ const createDataPasien = async (req, res, next) => {
 
 const updateDataPasien = async (req, res, next) => {
   const { id } = req.params;
-  const { nama, alamat, ttl, jenis_kelamin, pekerjaan, nohp, riwayat } =
-    req.body;
+  const {
+    nama,
+    alamat,
+    ttl,
+    jenis_kelamin,
+    pekerjaan,
+    nohp,
+    riwayat,
+    id_optik,
+  } = req.body;
   const update_at = await getCurrentDate();
   try {
     await pool.query(
-      `UPDATE tbl_pasien SET nama = ?, alamat = ?, ttl = ?, jenis_kelamin = ?, pekerjaan = ?, nohp = ?, riwayat = ?, update_at = ? WHERE id = ?`,
+      `UPDATE tbl_pasien SET nama = ?, alamat = ?, ttl = ?, jenis_kelamin = ?, pekerjaan = ?, nohp = ?, riwayat = ?, update_at = ?, id_optik = ? WHERE id = ?`,
       [
         nama,
         alamat,
@@ -90,6 +98,7 @@ const updateDataPasien = async (req, res, next) => {
         nohp,
         riwayat,
         update_at,
+        id_optik,
         id,
       ]
     );
