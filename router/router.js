@@ -124,8 +124,8 @@ router.route("/images/:imageName").get((req, res) => {
 router.route("/login").post(login);
 router.use(authToken);
 
-// delete optik
-router.route("/optik/:id").delete(deleteDataOptik);
+// delete & update optik
+router.route("/optik/:id").delete(deleteDataOptik).put(updateDataOptik);
 
 // Router Klaim Garansi
 router.route("/garansi_klaim_page").get(getKlaimPagination);
