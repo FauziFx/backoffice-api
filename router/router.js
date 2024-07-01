@@ -89,6 +89,7 @@ const router = express.Router();
 const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
+const { getTotal } = require("../controllers/total.controller.js");
 const upload = multer({
   dest: "images/",
   fileFilter: function (req, file, callback) {
@@ -123,6 +124,9 @@ router.route("/images/:imageName").get((req, res) => {
 // Auth
 router.route("/login").post(login);
 router.use(authToken);
+
+// Route total
+router.route("/total").get(getTotal);
 
 // delete & update optik
 router.route("/optik/:id").delete(deleteDataOptik).put(updateDataOptik);
