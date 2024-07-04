@@ -22,14 +22,14 @@ const getLaporanTransaksi = async (req, res, next) => {
     let filterPagination = "";
     if (mobile == "n") {
       filterTgl = `WHERE DATE(tanggal) BETWEEN ? AND ? AND jenis_transaksi = ?`;
-    }else{
+    } else {
       filterPagination = `LIMIT ${limit} OFFSET ${offset}`;
     }
 
     const query = `SELECT DATE(tanggal) AS tanggal, SUM(total) AS total, 
                   JSON_ARRAYAGG(JSON_OBJECT('id', id, 'waktu', SUBSTRING(cast(tanggal AS time), 1, 5), 
                                             'no_nota', no_nota, 'metode_pembayaran', metode_pembayaran, 
-                                            'status', status,'total', total)) AS transaksi
+                                            'status', status,'total', total, 'jenis_transaksi', jenis_transaksi)) AS transaksi
                   FROM tbl_transaksi 
                   ${filterTgl}
                   GROUP BY DATE(tanggal)
