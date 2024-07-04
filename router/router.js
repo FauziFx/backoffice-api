@@ -27,7 +27,10 @@ const {
   updatePelanggan,
   deletePelanggan,
 } = require("../controllers/pelanggan.controller.js");
-const { createTransaksi } = require("../controllers/transaksi.controller.js");
+const {
+  createTransaksi,
+  updateTransaksi,
+} = require("../controllers/transaksi.controller.js");
 const {
   getLaporanTransaksi,
   getLaporanTransaksiById,
@@ -179,6 +182,7 @@ router.route("/pelanggan/:id").put(updatePelanggan).delete(deletePelanggan);
 
 // Transaksi & Refund Route (Refund Set -(total), -(qty), -(subtotal), status: "refund")
 router.route("/transaksi").post(createTransaksi);
+router.route("/transaksi/:id").put(updateTransaksi);
 
 // Laporan Router
 router.route("/laporan/transaksi").get(getLaporanTransaksi);

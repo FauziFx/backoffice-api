@@ -53,6 +53,19 @@ const createTransaksi = async (req, res, next) => {
   }
 };
 
+const updateTransaksi = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { jenis_transaksi } = req.body;
+    const query = `UPDATE tbl_transaksi SET 
+      jenis_transaksi = ? WHERE id = ?`;
+    await pool.query(query, [jenis_transaksi, id]);
+    res.status(201).json({ success: true, message: "Data Berhasil disimpan" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const createTransaksiDetail = async (transaksiDetail, transaksiId) => {
   try {
     const detailArray = [];
@@ -101,3 +114,4 @@ function getCurrentDate() {
 }
 
 exports.createTransaksi = createTransaksi;
+exports.updateTransaksi = updateTransaksi;
