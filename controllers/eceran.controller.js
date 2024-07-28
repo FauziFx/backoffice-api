@@ -20,15 +20,16 @@ const getEceran = async (req, res, next) => {
 
 const createEceran = async (req, res, next) => {
   try {
-    const { no_nota, nama, alamat, frame, lensa, harga, r, l, tanggal } =
+    const { no_nota, nama, alamat, nohp, frame, lensa, harga, r, l, tanggal } =
       req.body;
     const query = `INSERT INTO tbl_eceran (no_nota,
-     nama, alamat, frame, lensa, harga, r, l, tanggal) 
+     nama, alamat, nohp, frame, lensa, harga, r, l, tanggal) 
       VALUES (?,?,?,?,?,?,?,?,?)`;
     await pool.query(query, [
       no_nota,
       nama,
       alamat,
+      nohp,
       frame,
       lensa,
       harga,
@@ -48,10 +49,20 @@ const createEceran = async (req, res, next) => {
 const updateEceran = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { no_nota, nama, alamat, frame, lensa, harga, r, l } = req.body;
+    const { no_nota, nama, alamat, nohp, frame, lensa, harga, r, l } = req.body;
     const query =
-      "UPDATE tbl_eceran SET no_nota=?, nama=?, alamat=?, frame=?, lensa=?, harga=?, r=?, l=?";
-    await pool.query(query, [no_nota, nama, alamat, frame, lensa, harga, r, l]);
+      "UPDATE tbl_eceran SET no_nota=?, nama=?, alamat=?, nohp=?, frame=?, lensa=?, harga=?, r=?, l=?";
+    await pool.query(query, [
+      no_nota,
+      nama,
+      alamat,
+      nohp,
+      frame,
+      lensa,
+      harga,
+      r,
+      l,
+    ]);
     res.status(201).json({
       success: true,
       message: "Data berhasil disimpan!",
