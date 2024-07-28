@@ -37,6 +37,8 @@ const {
   getLaporanRingkasan,
   getLaporanMaGrup,
   getLaporanPos,
+  getLaporanMaGrupById,
+  getLaporan,
 } = require("../controllers/laporan.controller.js");
 const { getKas, createKas } = require("../controllers/kas.controller.js");
 const {
@@ -185,10 +187,12 @@ router.route("/transaksi").post(createTransaksi);
 router.route("/transaksi/:id").put(updateTransaksi);
 
 // Laporan Router
+router.route("/laporan").get(getLaporan);
 router.route("/laporan/transaksi").get(getLaporanTransaksi);
 router.route("/laporan/transaksi/:id").get(getLaporanTransaksiById);
 router.route("/laporan/ringkasan").get(getLaporanRingkasan);
 router.route("/laporan/magrup").get(getLaporanMaGrup);
+router.route("/laporan/magrup/:id_pelanggan").get(getLaporanMaGrupById);
 router.route("/laporan/pos").get(getLaporanPos);
 
 // Get Kas masuk & keluar

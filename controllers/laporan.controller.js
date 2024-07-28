@@ -177,6 +177,28 @@ const getLaporanMaGrup = async (req, res, next) => {
   }
 };
 
+const getLaporanMaGrupById = async (req, res, next) => {
+  try {
+    const startDate = req.query.start_date || getCurrentDate();
+    const endDate = req.query.end_date || getCurrentDate();
+    const id = req.params.id_pelanggan;
+
+    const query = `SELECT tbl_pelanggan.nama_pelanggan, SUM(tbl_transaksi.total) AS total FROM tbl_transaksi
+    JOIN tbl_pelanggan ON tbl_transaksi.id_pelanggan = tbl_pelanggan.id
+    WHERE Date(tbl_transaksi.tanggal) BETWEEN ? AND ?
+    AND tbl_transaksi.id_pelanggan=?
+    GROUP BY tbl_pelanggan.nama_pelanggan`;
+    const [[response]] = await pool.query(query, [startDate, endDate, id]);
+
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 function getCurrentDate() {
   const d = new Date();
   const yy = d.getFullYear();
@@ -236,8 +258,28 @@ const getTotalPembayaran = async (
   }
 };
 
+const getLaporan = async (req, res, next) => {
+  try {
+    const startDate = req.query.start_date || getCurrentDate();
+    const endDate = req.query.end_date || getCurrentDate();
+
+    const query = `SELECT DATE(tanggal) AS tanggal, SUM(total) AS total FROM tbl_transaksi
+    WHERE DATE(tanggal) BETWEEN ? AND ?
+    AND jenis_transaksi='umum' GROUP BY DATE(tanggal)`;
+    const [response] = await pool.query(query, [startDate, endDate]);
+
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getLaporanTransaksi = getLaporanTransaksi;
 exports.getLaporanTransaksiById = getLaporanTransaksiById;
 exports.getLaporanRingkasan = getLaporanRingkasan;
 exports.getLaporanMaGrup = getLaporanMaGrup;
+exports.getLaporanMaGrupById = getLaporanMaGrupById;
 exports.getLaporanPos = getLaporanPos;
+exports.getLaporan = getLaporan;
