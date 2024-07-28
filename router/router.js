@@ -95,6 +95,12 @@ const fs = require("fs");
 const path = require("path");
 const multer = require("multer");
 const { getTotal } = require("../controllers/total.controller.js");
+const {
+  getEceran,
+  createEceran,
+  deleteEceran,
+  updateEceran,
+} = require("../controllers/eceran.controller.js");
 const upload = multer({
   dest: "images/",
   fileFilter: function (req, file, callback) {
@@ -129,6 +135,10 @@ router.route("/images/:imageName").get((req, res) => {
 // Auth
 router.route("/login").post(login);
 router.use(authToken);
+
+// Route Eceran
+router.route("/eceran").get(getEceran).post(createEceran);
+router.route("/eceran/:id").delete(deleteEceran).put(updateEceran);
 
 // Route total
 router.route("/total").get(getTotal);
