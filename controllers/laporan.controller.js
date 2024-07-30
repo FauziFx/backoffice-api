@@ -276,6 +276,25 @@ const getLaporan = async (req, res, next) => {
     next(error);
   }
 };
+
+const getLaporanEceran = async (req, res, next) => {
+  try {
+    const startDate = req.query.start_date || getCurrentDate();
+    const endDate = req.query.end_date || getCurrentDate();
+
+    const query = `SELECT DATE(tanggal) as Tanggal, SUM(harga) AS Total FROM tbl_eceran
+    WHERE DATE(tanggal) BETWEEN ? AND ?
+    GROUP BY DATE(tanggal)`;
+    const [response] = await pool.query(query, [startDate, endDate]);
+
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 exports.getLaporanTransaksi = getLaporanTransaksi;
 exports.getLaporanTransaksiById = getLaporanTransaksiById;
 exports.getLaporanRingkasan = getLaporanRingkasan;
@@ -283,3 +302,4 @@ exports.getLaporanMaGrup = getLaporanMaGrup;
 exports.getLaporanMaGrupById = getLaporanMaGrupById;
 exports.getLaporanPos = getLaporanPos;
 exports.getLaporan = getLaporan;
+exports.getLaporanEceran = getLaporanEceran;

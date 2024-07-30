@@ -39,6 +39,7 @@ const {
   getLaporanPos,
   getLaporanMaGrupById,
   getLaporan,
+  getLaporanEceran,
 } = require("../controllers/laporan.controller.js");
 const { getKas, createKas } = require("../controllers/kas.controller.js");
 const {
@@ -206,6 +207,7 @@ router.route("/laporan/ringkasan").get(getLaporanRingkasan);
 router.route("/laporan/magrup").get(getLaporanMaGrup);
 router.route("/laporan/magrup/:id_pelanggan").get(getLaporanMaGrupById);
 router.route("/laporan/pos").get(getLaporanPos);
+router.route("/laporan/eceran").get(getLaporanEceran);
 
 // Get Kas masuk & keluar
 router.route("/kas").get(getKas).post(createKas);
