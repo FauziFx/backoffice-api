@@ -50,9 +50,10 @@ const createEceran = async (req, res, next) => {
 const updateEceran = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { no_nota, nama, alamat, nohp, frame, lensa, harga, r, l } = req.body;
+    const { no_nota, nama, alamat, nohp, frame, lensa, harga, r, l, tanggal } =
+      req.body;
     const query =
-      "UPDATE tbl_eceran SET no_nota=?, nama=?, alamat=?, nohp=?, frame=?, lensa=?, harga=?, r=?, l=?";
+      "UPDATE tbl_eceran SET no_nota=?, nama=?, alamat=?, nohp=?, frame=?, lensa=?, harga=?, r=?, l=?, tanggal=? WHERE id=?";
     await pool.query(query, [
       no_nota,
       nama,
@@ -63,6 +64,8 @@ const updateEceran = async (req, res, next) => {
       harga,
       r,
       l,
+      tanggal,
+      id,
     ]);
     res.status(201).json({
       success: true,
