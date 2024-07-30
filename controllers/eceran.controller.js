@@ -8,7 +8,7 @@ const getEceran = async (req, res, next) => {
     if (search != "") {
       filterSearch = `WHERE nama LIKE '%${search}%'`;
     }
-    const query = `SELECT * FROM tbl_eceran ${filterSearch}`;
+    const query = `SELECT * FROM tbl_eceran ${filterSearch} ORDER BY id DESC`;
     const [response] = await pool.query(query);
     res.status(200).json({
       success: true,
