@@ -1,4 +1,5 @@
 const pool = require("../db/connect.js");
+const sprintf = require("sprintf-js").sprintf;
 
 const getEceran = async (req, res, next) => {
   try {
@@ -86,7 +87,24 @@ const deleteEceran = async (req, res, next) => {
   }
 };
 
+const getNoNota = async (req, res, next) => {
+  try {
+    const query = `SELECT MAX(no_nota) AS no_nota FROM tbl_eceran`;
+    const [[result]] = await pool.query(query);
+
+    let no_nota = parseInt(result.no_nota) + 1;
+
+    res.json({
+      success: true,
+      data: sprintf("%06s", no_nota),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getEceran = getEceran;
 exports.createEceran = createEceran;
 exports.updateEceran = updateEceran;
 exports.deleteEceran = deleteEceran;
+exports.getNoNota = getNoNota;

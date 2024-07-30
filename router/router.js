@@ -100,6 +100,7 @@ const {
   createEceran,
   deleteEceran,
   updateEceran,
+  getNoNota,
 } = require("../controllers/eceran.controller.js");
 const upload = multer({
   dest: "images/",
@@ -138,6 +139,7 @@ router.use(authToken);
 
 // Route Eceran
 router.route("/eceran").get(getEceran).post(createEceran);
+router.route("/eceran/no_nota").get(getNoNota);
 router.route("/eceran/:id").delete(deleteEceran).put(updateEceran);
 
 // Route total
