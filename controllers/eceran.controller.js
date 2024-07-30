@@ -25,7 +25,7 @@ const createEceran = async (req, res, next) => {
       req.body;
     const query = `INSERT INTO tbl_eceran (no_nota,
      nama, alamat, nohp, frame, lensa, harga, r, l, tanggal) 
-      VALUES (?,?,?,?,?,?,?,?,?)`;
+      VALUES (?,?,?,?,?,?,?,?,?,?)`;
     await pool.query(query, [
       no_nota,
       nama,
