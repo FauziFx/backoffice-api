@@ -163,7 +163,7 @@ const getLaporanMaGrup = async (req, res, next) => {
     const endDate = req.query.end_date || getCurrentDate();
 
     const query = `SELECT tbl_pelanggan.nama_pelanggan AS nama_pelanggan, SUM(tbl_transaksi_detail.qty) AS item_terjual, SUM(tbl_transaksi_detail.subtotal) AS total  FROM tbl_transaksi 
-    JOIN tbl_pelanggan ON tbl_pelanggan.id = tbl_transaksi.id_pelanggan
+    LEFT JOIN tbl_pelanggan ON tbl_pelanggan.id = tbl_transaksi.id_pelanggan
     JOIN tbl_transaksi_detail ON tbl_transaksi_detail.id_transaksi = tbl_transaksi.id
     WHERE DATE(tbl_transaksi.tanggal) BETWEEN ? AND ? AND tbl_transaksi.jenis_transaksi = "magrup"  GROUP BY tbl_transaksi.id_pelanggan`;
     const [response] = await pool.query(query, [startDate, endDate]);
