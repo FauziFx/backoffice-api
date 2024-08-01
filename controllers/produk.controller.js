@@ -258,6 +258,19 @@ const deleteProdukVarian = async (req, res, next) => {
   }
 };
 
+const getCountProduk = async (req, res, next) => {
+  try {
+    const query = `SELECT COUNT(id) as jumlah_produk FROM tbl_produk`;
+    const [[response]] = await pool.query(query);
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createProduk = createProduk;
 exports.getProduk = getProduk;
 exports.getProdukById = getProdukById;
@@ -265,3 +278,4 @@ exports.getProdukTrackStok = getProdukTrackStok;
 exports.deleteProduk = deleteProduk;
 exports.updateProduk = updateProduk;
 exports.deleteProdukVarian = deleteProdukVarian;
+exports.getCountProduk = getCountProduk;

@@ -113,5 +113,22 @@ function getCurrentDate() {
   };
 }
 
+const getCountTransaksi = async (req, res, next) => {
+  try {
+    const startDate = req.query.start_date || getCurrentDate();
+    const endDate = req.query.end_date || getCurrentDate();
+    const query = `SELECT COUNT(id) as jumlah_transaksi FROM tbl_transaksi
+    WHERE DATE(tanggal) BETWEEN ? AND ? AND jenis_transaksi="umum"`;
+    const [[response]] = await pool.query(query, [startDate, endDate]);
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createTransaksi = createTransaksi;
 exports.updateTransaksi = updateTransaksi;
+exports.getCountTransaksi = getCountTransaksi;

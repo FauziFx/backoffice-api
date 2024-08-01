@@ -16,6 +16,7 @@ const {
   updateProduk,
   deleteProdukVarian,
   getProdukTrackStok,
+  getCountProduk,
 } = require("../controllers/produk.controller.js");
 const {
   createPenyesuaian,
@@ -30,6 +31,7 @@ const {
 const {
   createTransaksi,
   updateTransaksi,
+  getCountTransaksi,
 } = require("../controllers/transaksi.controller.js");
 const {
   getLaporanTransaksi,
@@ -180,6 +182,7 @@ router
 
 // Produk Router
 router.route("/produk").post(createProduk).get(getProduk);
+router.route("/produk/count").get(getCountProduk);
 router.route("/produk/track").get(getProdukTrackStok);
 router.route("/produk/varian").delete(deleteProdukVarian);
 router
@@ -198,6 +201,7 @@ router.route("/pelanggan/:id").put(updatePelanggan).delete(deletePelanggan);
 // Transaksi & Refund Route (Refund Set -(total), -(qty), -(subtotal), status: "refund")
 router.route("/transaksi").post(createTransaksi);
 router.route("/transaksi/:id").put(updateTransaksi);
+router.route("/transaksi/count").get(getCountTransaksi);
 
 // Laporan Router
 router.route("/laporan").get(getLaporan);
