@@ -141,7 +141,7 @@ const getProdukById = async (req, res, next) => {
       selectDataVarian = `JSON_ARRAYAGG(JSON_OBJECT('id', tbl_varian.id,'nama_varian', tbl_varian.nama_varian, 'stok_tersedia', tbl_varian.stok, 'stok_aktual', tbl_varian.stok, 'penyesuaian', '0'))`;
       filterTrackStatus = `WHERE tbl_produk.id = ? AND tbl_varian.track_stok = '${track_status}'`;
     } else {
-      selectDataVarian = `JSON_ARRAYAGG(JSON_OBJECT('id', tbl_varian.id,'nama_varian', tbl_varian.nama_varian, 'stok', tbl_varian.stok, 'stok_minimum', tbl_varian.stok_minimum, 'harga', tbl_varian.harga, 'track_stok', tbl_varian.track_stok))`;
+      selectDataVarian = `JSON_ARRAYAGG(JSON_OBJECT('id', tbl_varian.id,'kode', tbl_varian.kode_varian,'nama', tbl_varian.nama,'nama_varian', tbl_varian.nama_varian, 'stok', tbl_varian.stok, 'stok_minimum', tbl_varian.stok_minimum, 'harga', tbl_varian.harga, 'track_stok', tbl_varian.track_stok))`;
       filterTrackStatus = `WHERE tbl_produk.id = ?`;
     }
 
