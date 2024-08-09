@@ -47,6 +47,7 @@ const createTransaksi = async (req, res, next) => {
     res.status(201).json({
       success: true,
       message: "Transaksi berhasil!",
+      noNota: noNota,
     });
   } catch (error) {
     next(error);
