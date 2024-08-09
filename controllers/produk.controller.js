@@ -271,6 +271,22 @@ const getCountProduk = async (req, res, next) => {
   }
 };
 
+const getVarianByKode = async (req, res, next) => {
+  try {
+    const { kode } = req.params;
+    const query = `SELECT tbl_varian.id_produk, tbl_varian.id AS id_varian, tbl_produk.nama_produk, tbl_varian.nama_varian, tbl_varian.harga
+    FROM tbl_varian JOIN tbl_produk ON tbl_varian.id_produk = tbl_produk.id 
+    WHERE tbl_varian.kode_varian = ?`;
+    const [[response]] = await pool.query(query, [kode]);
+    res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.createProduk = createProduk;
 exports.getProduk = getProduk;
 exports.getProdukById = getProdukById;
@@ -279,3 +295,4 @@ exports.deleteProduk = deleteProduk;
 exports.updateProduk = updateProduk;
 exports.deleteProdukVarian = deleteProdukVarian;
 exports.getCountProduk = getCountProduk;
+exports.getVarianByKode = getVarianByKode;

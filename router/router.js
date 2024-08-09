@@ -17,6 +17,7 @@ const {
   deleteProdukVarian,
   getProdukTrackStok,
   getCountProduk,
+  getVarianByKode,
 } = require("../controllers/produk.controller.js");
 const {
   createPenyesuaian,
@@ -185,6 +186,7 @@ router.route("/produk").post(createProduk).get(getProduk);
 router.route("/produk/count").get(getCountProduk);
 router.route("/produk/track").get(getProdukTrackStok);
 router.route("/produk/varian").delete(deleteProdukVarian);
+router.route("/produk/varian/:kode").get(getVarianByKode);
 router
   .route("/produk/:id")
   .get(getProdukById)
